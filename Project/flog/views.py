@@ -17,26 +17,37 @@
 # built-in import
 from django.shortcuts import render
 
-# dummy posts data
-posts = [
-    {
-        "author": "DevXris",
-        "title": "Flog Post 1",
-        "content": "First flog post",
-        "date_posted": "May 22 2019",
-    },
-    {
-        "author": "Jone Doe",
-        "title": "Flog Post 2",
-        "content": "Second flog post",
-        "date_posted": "May 23 2019",
-    },
-]
+# Using dummy posts data ===============================================
+# posts = [
+#     {
+#         "author": "DevXris",
+#         "title": "Flog Post 1",
+#         "content": "First flog post",
+#         "date_posted": "May 22 2019",
+#     },
+#     {
+#         "author": "Jone Doe",
+#         "title": "Flog Post 2",
+#         "content": "Second flog post",
+#         "date_posted": "May 23 2019",
+#     },
+# ]
+# def home(request):
+#     context = {"posts": posts}  # pass context data into render function
+#     return render(request, "flog/home.html", context)
+# def about(request):
+#     return render(request, "flog/about.html", {"title": "About"})
+# =====================================================================
+
+
+# manual import
+from .models import Post
 
 
 # Create your views here.
+# Using Post from database ============================================
 def home(request):
-    context = {"posts": posts}  # pass context data into render function
+    context = {"posts": Post.objects.all()}
     return render(request, "flog/home.html", context)
 
 
