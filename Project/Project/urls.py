@@ -21,6 +21,8 @@ from django.urls import path
 from django.urls import include
 from users import views as user_views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Creating path route
 # 1. include in project.urls, path(“route/“, include(“app.urls”)) (impart django.urls .include)
@@ -46,3 +48,6 @@ urlpatterns = [
     path("profile/", user_views.profile, name="profile"),
     path("", include("flog.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

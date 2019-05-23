@@ -116,6 +116,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # where upload image in file system
+MEDIA_URL = "/media/"  # where upload image in the browser
+
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 LOGIN_REDIRECT_URL = "flog-home"
