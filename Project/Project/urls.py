@@ -19,6 +19,7 @@ from django.urls import path
 
 # manual import
 from django.urls import include
+from users import views as user_views
 
 # Creating path route
 # 1. include in project.urls, path(“route/“, include(“app.urls”)) (impart django.urls .include)
@@ -26,5 +27,10 @@ from django.urls import include
 # 3. create http views in app.views.py file by function
 
 # include flog urls from flog.urls, django just keep remaining string of path
+# or use app's views directly, such as register view
 # leave "" as the home page route
-urlpatterns = [path("admin/", admin.site.urls), path("", include("flog.urls"))]
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("register/", user_views.register, name="register"),
+    path("", include("flog.urls")),
+]
