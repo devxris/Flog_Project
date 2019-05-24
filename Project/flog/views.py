@@ -42,6 +42,14 @@ from django.shortcuts import render
 
 # manual import
 from .models import Post
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 # Create your views here.
@@ -53,3 +61,70 @@ def home(request):
 
 def about(request):
     return render(request, "flog/about.html", {"title": "About"})
+
+
+# Using class base views ==============================================
+class PostListView(ListView):
+    # assign model to Post
+    model = Post
+    # assign template name
+    template_name = "flog/home.html"  # default for: <app>/<model>_<viewtype>.html
+    # setup object to be post
+    context_object_name = "posts"
+    # order the post by latest one
+    ordering = "-date_posted"
+
+
+class PostDetailView(DetailView):
+    model = Post
+    # template name follows convention <app>/<model>_<viewtype>.html
+    # if not assign object, in template need to use "object" directly
+
+
+# inherited from LoginRequiredMixin to check if user logged in before new post
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ["title", "content"]  # for "form" view
+    # template follows convention <app>/<model>_<viewtype>.html but viewtype is form
+    # share the same template as UpdateView
+
+    # override form_valid() for pass in author
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+# inherited from UserPassesTestMixin to check the owner could update the post
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    fields = ["title", "content"]  # for "form" view
+    # template follows convention <app>/<model>_<viewtype>.html but viewtype is form
+    # share the same template as CreateView
+
+    # override form_valid() for pass in author
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    # override test_func() to check post owner
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        else:
+            return False
+
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    # assign the home route after deletion is confirmed
+    success_url = "/"
+    # template follows convention <app>/<model>_<viewtype>.html but viewtype is confirm_delete
+
+    # override test_func() to check post owner
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        else:
+            return False
