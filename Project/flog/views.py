@@ -50,6 +50,8 @@ from django.views.generic import (
     DeleteView,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -73,6 +75,8 @@ class PostListView(ListView):
     context_object_name = "posts"
     # order the post by latest one
     ordering = "-date_posted"
+    # setup pagination (in url query by /?page=number)
+    paginate_by = 5
 
 
 class PostDetailView(DetailView):
@@ -128,3 +132,20 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         else:
             return False
+
+
+class UserPostListView(ListView):
+    # assign model to Post
+    model = Post
+    # assign template name
+    template_name = "flog/user_posts.html"  # default for: <app>/<model>_<viewtype>.html
+    # setup object to be post
+    context_object_name = "posts"
+    # order the post by latest one
+    # ordering = "-date_posted"
+    # setup pagination (in url query by /?page=number)
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get("username"))
+        return Post.objects.filter(author=user).order_by("-date_posted")
